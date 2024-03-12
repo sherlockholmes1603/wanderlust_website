@@ -39,6 +39,11 @@
     <hr>
 
     <div class="col-8 offset-2">
+
+        <% if (user) { %>
+         
+        
+
         <h4>Leave a Review</h4>
         <form action="/listings/<%= property._id %>/reviews" method="post" class="needs-validation" novalidate>
             <div class="mb-3 mt-3">
@@ -56,6 +61,8 @@
 
         <hr>
 
+        <% } %>
+
         <h4>All Reviews</h4>
 
         <div class="row">
@@ -63,11 +70,14 @@
             <% property.reviews.forEach(review => { %>
 
                 <div class="card col-5 mb-3 ms-3">
-                    <div class="card-title"><%= review.rating %> stars</div>
+                    <h5><b> <div class="card-title">@<%= review.author.username %></div></b></h5>
+                    <div class="card-text"><%= review.rating %> stars</div>
                     <div class="card-text"><%= review.comment %></div>
-                    <form action="/listings/<%= property._id %>/reviews/<%= review._id %>?_method=DELETE" method="post">
-                        <button class="btn btn-dark btn-sm">Delete </button>
-                    </form>
+                    <% if (user && user._id.equals(review.author._id)) { %>
+                        <form action="/listings/<%= property._id %>/reviews/<%= review._id %>?_method=DELETE" method="post">
+                            <button class="btn btn-dark btn-sm">Delete </button>
+                        </form>
+                    <% } %>
                     <br>
                 </div>
 
