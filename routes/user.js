@@ -5,61 +5,22 @@ const router = express.Router({mergeParams: true});
 const User = require("../models/user.js");
 const passport = require("passport");
 const { saveRedirectUrl } = require("../middleware.js");
+const { signup, renderSignup, login, renderLogin, logout } = require("../controllers/users.js");
 
 
-router.get("/signup", (req, res) => {
-    res.render("user/signup.ejs")
-});
 
-router.post("/signup", wrapAsync( async(req, res) => {
-    try {
-        let {username, email, password} = req.body;
-        const newUser = new User({email, username});
-        const registerdUser = await User.register(newUser, password);   
-        console.log(registerdUser);
-        req.login(registerdUser, (err) => {
-            if(err){
-                return next(err);
-            }
-            req.flash("success", `Welcome ${username} to Wanderlust`);
-            res.redirect("/listings");
-        });
-        
-    } catch(err){
-        req.flash("error", err.message);
-        res.redirect("/signup");
-    }
-    
-} ));
+router.route("/signup")
+.get(renderSignup)
+.post(wrapAsync( signup ));
 
 
-router.get("/login", (req, res) => {
-    res.render("user/login.ejs");
-});
+router.route("/login")
+.get(renderLogin)
+.post(  saveRedirectUrl,
+        passport.authenticate('local', { failureRedirect: '/login', failureFlash: true}), 
+        login );
 
-router.post("/login", 
-            saveRedirectUrl,
-            passport.authenticate('local', { failureRedirect: '/login', failureFlash: true}), 
-            async (req, res) => {
-                req.flash("success", "Login successful! Welcome back to wanderlust");
-                if(res.locals.redirectUrl){
-                    res.redirect(res.locals.redirectUrl);
-                }
-                else{
-                    res.redirect("/listings");
-                }
-} );
-
-router.get("/logout", (req, res, next) => {
-    req.logout((err) => {
-        if(err){
-            return next(err);
-        }
-        req.flash("success", "You are logged out");
-        res.redirect("/listings");
-    })
-
-})
+router.get("/logout", logout);
 
 
 

@@ -5,36 +5,16 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const router = express.Router({mergeParams: true});
 const Review = require("../models/review.js");
 const {validateReview, isLoggedIn, isReviewAuthor} = require("../middleware.js");
+const { giveReview, destroyReview } = require("../controllers/review.js");
 
 
 
 
 
 
-router.post("/", isLoggedIn, validateReview, wrapAsync( async (req, res) => {
-    let listing = await Listing.findById(req.params.id);
-    let newReview = new Review(req.body.review);
+router.post("/", isLoggedIn, validateReview, wrapAsync( giveReview ));
 
-    newReview.author = req.user._id;
-
-    listing.reviews.push(newReview);
-
-    await newReview.save();
-    await listing.save();
-
-    console.log("new Review saved");
-    res.redirect(`/listings/${listing._id}`);
-}));
-
-router.delete("/:rid", isLoggedIn, isReviewAuthor, wrapAsync(async (req, res) => {
-  let {id, rid} = req.params;
-
-  await Listing.findByIdAndUpdate(id, {$pull: {reviews: rid}});
-
-  await Review.findByIdAndDelete(rid);
-
-  res.redirect(`/listings/${id}`);
-}));
+router.delete("/:rid", isLoggedIn, isReviewAuthor, wrapAsync(destroyReview));
 
 
 
