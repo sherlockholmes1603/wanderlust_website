@@ -1,3 +1,8 @@
+if (process.env.NODE_ENV != "production"){
+  console.log("Running in non production Phase");
+  require("dotenv").config();
+}
+
 const mongoose = require("mongoose");
 const express = require("express");
 const path = require("path");
