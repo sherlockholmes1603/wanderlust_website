@@ -91,8 +91,12 @@ app.all("*", (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  let {statusCode = 500, message = "Something Went Wrong!"} = err;
-  res.render("error.ejs", {statusCode, message});
+  if (err.status === 404) {
+    res.status(404);
+    res.send("Page not found.");
+    // The headers are sent after the above line
+    res.set("Content-Type", "text/plain");
+  }
 });
 
 
