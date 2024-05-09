@@ -92,16 +92,14 @@ app.use("/", userRoute);
 
 
 app.all("*", (req, res, next) => {
-  next(new ExpressError(404, "Page Not Found"));
+  next(new ExpressError(404, "Page not Found!"));
 });
 
 app.use((err, req, res, next) => {
-  if (err.status === 404) {
-    res.status(404);
-    res.send("Page not found.");
-    // The headers are sent after the above line
-    res.set("Content-Type", "text/plain");
-  }
+  console.log(err);
+  let { statusCode = 500, message = "Something went Wrong!" } = err;
+  res.status(statusCode).render("error.ejs", {statusCode, message });
+  //res.status(statusCode).send(message);
 });
 
 

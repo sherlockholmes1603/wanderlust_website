@@ -13,14 +13,14 @@ const upload = multer({storage});
 
 router.route("/")
     .get(wrapAsync(index))
-    .post(isLoggedIn, validateListing, upload.single("lisiting[image]"), wrapAsync(createListing));
+    .post(isLoggedIn, upload.single("listing[image]"), validateListing, wrapAsync(createListing));
 
 
 router.get("/new", isLoggedIn, wrapAsync(renderNewForm));
 
 router.route("/:id")
     .get(wrapAsync(showListing))
-    .put(isLoggedIn, isOwner, wrapAsync(editListing))
+    .put(isLoggedIn, isOwner, upload.single("listing[image]"), wrapAsync(editListing))
     .delete(isLoggedIn, isOwner, wrapAsync(destroyListing));
 
 
