@@ -8,7 +8,7 @@ const {listingSchema, reviewSchema} = require("./schema.js");
 module.exports.isLoggedIn = (req, res, next) => {
     if(!req.isAuthenticated()){
         req.session.redirectUrl = req.originalUrl;
-        req.flash("error", "You must be logged in to create a new listing");
+        req.flash("error", "You must be logged in to create a new listing or edit a listing");
         return res.redirect("/login");
     }
     next();
@@ -60,7 +60,7 @@ module.exports.validateReview = (req, res, next) => {
 module.exports.isReviewAuthor = async (req, res, next) => {
     let {id, rid} = req.params;
     let review = await Review.findById(rid);
-    if(!review.owner._id.equals(res.locals.user._id)){
+    if(!review.author._id.equals(res.locals.user._id)){
         req.flash("error", "You are not the author of the review");
         return res.redirect(`/listings/${id}`);
     }
