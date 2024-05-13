@@ -6,24 +6,24 @@
         <div class="col-8 offset-2">
 
             <h2><b>
-                    <%= property.title %>
+                    <%= listing.title %>
                 </b></h2>
         </div>
 
         <div class="card col-6 offset-2 listing-card">
-            <img src="<%= property.image.url %>" class="card-img-top show-img" alt="Listing Image">
+            <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="Listing Image">
             <br>
             <div class="card-body">
                 <p class="card-text">Owned by @<i>
-                        <%= property.owner.username %>
+                        <%= listing.owner.username %>
                     </i></p>
                 <p class="card-text">
-                    <%= property.description %>
+                    <%= listing.description %>
                 </p>
-                <p class="card-text">&#8377; <%= property.price.toLocaleString("en-IN") %>
+                <p class="card-text">&#8377; <%= listing.price.toLocaleString("en-IN") %>
                 </p>
                 <p class="card-text">
-                    <%= property.location %>, <%= property.country %>
+                    <%= listing.location %>, <%= listing.country %>
                 </p>
             </div>
         </div>
@@ -35,11 +35,11 @@
 
 
 
-    <% if (user && user._id.equals(property.owner._id)) { %>
+    <% if (user && user._id.equals(listing.owner._id)) { %>
         <div class="btns">
-            <a href="/listings/<%= property._id %>/edit" class="btn btn-dark col-1 offset-3">Edit</a>
+            <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark col-1 offset-3">Edit</a>
 
-            <form action="/listings/<%= property._id %>?_method=DELETE" method="post">
+            <form action="/listings/<%= listing._id %>?_method=DELETE" method="post">
                 <button class="btn btn-dark offset-4">Delete</button>
             </form>
         </div>
@@ -54,7 +54,7 @@
 
 
                     <h4>Leave a Review</h4>
-                    <form action="/listings/<%= property._id %>/reviews" method="post" class="needs-validation"
+                    <form action="/listings/<%= listing._id %>/reviews" method="post" class="needs-validation"
                         novalidate>
                         <div class="mb-3 mt-3">
                             <label for="rating" class="form-label">Rating</label>
@@ -89,38 +89,56 @@
 
                     <% } %>
 
-                        <h4>All Reviews</h4>
+                        <% if(listing.reviews.length > 0) { %>
 
-                        <div class="row">
+                            <div class="row">
 
-                            <% property.reviews.forEach(review=> { %>
+                                <h4>All Reviews</h4>
 
-                                <div class="card col-5 mb-3 ms-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><b>
-                                                @<%= review.author.username %>
-                                            </b></h5>
-                                        <p class="starability-result card-text" data-rating="<%= review.rating %>">
-                                        </p>
-                                        <p class="card-text">
-                                            <%= review.comment %>
-                                        </p>
+                                <% listing.reviews.forEach(review=> { %>
 
-                                        <% if (user && user._id.equals(review.author._id)) { %>
-                                            <form
-                                                action="/listings/<%= property._id %>/reviews/<%= review._id %>?_method=DELETE"
-                                                method="post">
-                                                <button class="btn btn-dark btn-sm">Delete </button>
-                                            </form>
-                                            <% } %>
-                                                <br>
+                                    <div class="card col-5 mb-3 ms-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><b>
+                                                    @<%= review.author.username %>
+                                                </b></h5>
+                                            <p class="starability-result card-text" data-rating="<%= review.rating %>">
+                                            </p>
+                                            <p class="card-text">
+                                                <%= review.comment %>
+                                            </p>
+
+                                            <% if (user && user._id.equals(review.author._id)) { %>
+                                                <form
+                                                    action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE"
+                                                    method="post">
+                                                    <button class="btn btn-dark btn-sm">Delete </button>
+                                                </form>
+                                                <% } %>
+                                                    <br>
+                                        </div>
                                     </div>
-                                </div>
 
 
-                                <% }) %>
-                        </div>
+                                    <% }) %>
+                            </div>
+
+                        <% } %>
 
 
             </div>
             </div>
+
+            <div class="col-6 offset-3 mb-3">
+                <h3>Where you will be</h3>
+                <div id="map"></div>
+            </div>
+
+            <script>
+                const mapToken = "<%= process.env.MAP_TOKEN %>";
+                const coordinates = <%- JSON.stringify(listing.geometry.coordinates) %>;
+                console.log(coordinates);
+                console.log(mapToken);
+            </script>
+
+            <script src="/js/map.js"></script>

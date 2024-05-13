@@ -9,6 +9,7 @@
   "author": "Chahak Jethani",
   "license": "ISC",
   "dependencies": {
+    "@mapbox/mapbox-sdk": "^0.16.0",
     "cloudinary": "^2.1.0",
     "connect-flash": "^0.1.1",
     "dotenv": "^16.4.5",
