@@ -23,6 +23,8 @@ const listingRoute = require("./routes/listing.js");
 const reviewRoute = require("./routes/review.js");
 const userRoute = require("./routes/user.js");
 
+const MongoUrl = "mongodb://127.0.0.1:27017/wanderlust"
+
 
 
 main().then(() => {
@@ -30,7 +32,7 @@ main().then(() => {
 }).catch(err => console.log(err));
 
 async function main() {
-await mongoose.connect("mongodb://127.0.0.1:27017/wanderlust");
+await mongoose.connect(MongoUrl);
 
 // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
 };
