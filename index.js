@@ -13,6 +13,7 @@ const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const localStrategy = require("passport-local");
@@ -24,6 +25,7 @@ const reviewRoute = require("./routes/review.js");
 const userRoute = require("./routes/user.js");
 
 const MongoUrl = "mongodb://127.0.0.1:27017/wanderlust"
+const dbURL = process.env.MONGODB_ATLAS_URL;
 
 
 
@@ -32,7 +34,7 @@ main().then(() => {
 }).catch(err => console.log(err));
 
 async function main() {
-await mongoose.connect(MongoUrl);
+await mongoose.connect(dbURL);
 
 // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
 };
@@ -45,16 +47,28 @@ app.engine('ejs', ejsMate);
 app.use(method("_method"));
 app.use(express.urlencoded({extended: true}));
 
+const store = MongoStore.create({
+  mongoUrl: dbURL,
+  crypto: {
+    secret: "mysecretcode"
+  },
+  touchAfter: 24*3600*7
+});
+
+store.on("error", () => {
+  console.log("ERROR IN MONGO SESSION STORE", err);
+})
 
 const sessionOptions = {
-    secret: "AsecretCode",
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      expires: Date.now() + 7 * 24 * 3600 * 1000,
-      maxAge: 7 * 24 * 3600 * 1000,
-      httpOnly: true
-    }
+  store,
+  secret: "AsecretCode",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    expires: Date.now() + 7 * 24 * 3600 * 1000,
+    maxAge: 7 * 24 * 3600 * 1000,
+    httpOnly: true
+  }
 };
 
 
